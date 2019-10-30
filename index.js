@@ -84,8 +84,9 @@ const plugin = function(schema, options) {
                                     each(this._conditions, (value, key) => {
                                         conditions[key] = { $ne: value };
                                     });
-                                } else if (this._id) {
-                                    conditions._id = { $ne: this._id };
+                                }
+                                if (this._id) {
+                                    conditions._id = conditions._id ? { $eq: conditions._id, $ne: this._id } : { $ne: this._id };
                                 }
                             }
 
