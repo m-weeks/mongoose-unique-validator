@@ -186,7 +186,7 @@ module.exports = function(mongoose) {
             promise.catch(done);
         });
 
-        // adresses https://github.com/blakehaswell/mongoose-unique-validator/issues/108
+        // addresses https://github.com/blakehaswell/mongoose-unique-validator/issues/108
         it('does not throw error when saving self with new unique value via findByIdAndUpdate with multiple records', function(done) {
             var User = mongoose.model('User', helpers.createUserSchema().plugin(uniqueValidator));
 
@@ -420,6 +420,25 @@ module.exports = function(mongoose) {
             promise.then(function() {
                 // Try saving a the first user that has the same email, but is active
                 new User(helpers.USERS_PARTIAL_FILTER_EXPRESSION[0]).save().catch(done).then(function() {
+                    done();
+                });
+            });
+            promise.catch(done);
+        });
+
+        // addresses https://github.com/letscamp/mongoose-unique-validator/issues/2
+        it('does not throw an error when using a partial filter expression containing overlapping conditions', function (done) {
+            var User = mongoose.model('Employee', helpers.createUserPartialFilterExpressionSchemaWithOverlappingConditions().plugin(uniqueValidator));
+            
+            var promise = Promise.all([
+                // Save a user with an email
+                new User(helpers.USERS_PARTIAL_FILTER_EXPRESSION_OVERLAPPING[1]).save(),
+                // Save the first (deactivated) user
+                new User(helpers.USERS_PARTIAL_FILTER_EXPRESSION_OVERLAPPING[2]).save(),
+            ]);
+            promise.then(function() {
+                // Try saving a the first user that has the same email, but is active
+                new User(helpers.USERS_PARTIAL_FILTER_EXPRESSION_OVERLAPPING[0]).save().catch(done).then(function() {
                     done();
                 });
             });

@@ -57,9 +57,9 @@ const plugin = function(schema, options) {
                             const parentDoc = isSubdocument ? this.ownerDocument() : this;
                             const isNew = typeof parentDoc.isNew === 'boolean' ? parentDoc.isNew : !isQuery;
 
-                            const conditions = {};
+                            var conditions = {};
 
-                            if (!isNew && !isQuery && !this.isModified(pathName)) {
+                            if (!isNew && !isQuery && !parentDoc.isModified(pathName)) {
                                 return resolve(true);
                             }
 
@@ -95,7 +95,12 @@ const plugin = function(schema, options) {
                             }
 
                             if (indexOptions.partialFilterExpression) {
-                                merge(conditions, indexOptions.partialFilterExpression);
+                                conditions = {
+                                    $and: [
+                                        conditions,
+                                        indexOptions.partialFilterExpression
+                                    ]
+                                }
                             }
 
                             // Obtain the model depending on context

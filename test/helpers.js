@@ -98,6 +98,30 @@ module.exports = {
         });
     },
 
+    createUserPartialFilterExpressionSchemaWithOverlappingConditions: function() {
+        return new mongoose.Schema({
+            username: {
+                type: String
+            },
+            email: {
+                type: String,
+                index: {
+                    unique: true,
+                    partialFilterExpression: {
+                        active: true,
+                        email: { $exists: true }
+                    }
+                }
+            },
+            password: {
+                type: String
+            },
+            active: {
+                type: Boolean
+            }
+        });
+    },
+
     createCompoundIndexSchema: function() {
         var schema = new mongoose.Schema({
             username: {
@@ -279,6 +303,27 @@ module.exports = {
             username: 'Robert Miller',
             email: 'bob@robertmiller.com',
             password: '@b0B#b0B$b0B%',
+            active: true
+        },
+        {
+            username: 'JaneSmith',
+            email: 'jane.smith@gmail.com',
+            password: 'j4n3Ru13s',
+            active: false
+        }
+    ],
+
+    USERS_PARTIAL_FILTER_EXPRESSION_OVERLAPPING: [
+        {
+            username: 'JaneSmith',
+            email: 'jane.smith@gmail.com',
+            password: 'j4n3Ru13s',
+            active: true
+        },
+        {
+            username: 'JohnDoe',
+            password: 'JohhnyTheMan86',
+            email: 'john@gmail.com',
             active: true
         },
         {
